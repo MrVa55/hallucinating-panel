@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No, You're Hallucinating</title>
+
+    <script>
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update current texts, their display times, and scrolling status
+                    let currentTextList = document.getElementById('currentTextList');
+                    currentTextList.innerHTML = ''; // Clear existing list
+                    data.current_texts.forEach(function(textStatus) {
+                        let li = document.createElement('li');
+                        let status = textStatus.scrolling_in ? ` (Scrolling in, time left: ${textStatus.scroll_in_time - textStatus.time_shown} seconds)` : "";
+                        li.textContent = `${textStatus.text} - Shown for ${textStatus.time_shown} seconds${status}`;
+                        currentTextList.appendChild(li);
+                    });
+
+                    // Update queue
+                    let queueList = document.getElementById('queueList');
+                    queueList.innerHTML = ''; // Clear existing list
+                    data.queue.forEach(function(text) {
+                        let li = document.createElement('li');
+                        li.textContent = text;
+                        queueList.appendChild(li);
+                    });
+                });
+        }
+
+        // Update status every second
+        setInterval(updateStatus, 1000);
+
+        // Initial load
+        window.onload = updateStatus;
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #FF5733; /* Red background */
+            color: white; /* White text */
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: white; /* White text for the header */
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .content h2 {
+            color: #333;
+        }
+        .content p, .content ul {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .banner {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .banner img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>No, You're Hallucinating Control Panel</h1>
+</header>
+
+<div class="container">
+    <div class="banner">
+        <img src="/static/images/image.webp">
+    </div>
+    
+    <form action="/submit" method="POST">
+        <label for="text">Enter text:</label>
+        <input type="text" id="text" name="text" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <h2>Currently Displayed Texts</h2>
+    <ul id="currentTextList"></ul>
+
+    <h2>Queued Texts</h2>
+    <ul id="queueList"></ul>
+
+</div>
+
+<footer>
+    &copy; No, You're Hallucinating Burning Man 2024
+</footer>
+
+</body>
+</html>
